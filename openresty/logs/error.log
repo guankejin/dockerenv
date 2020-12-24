@@ -1,3 +1,0 @@
-2020/12/23 09:26:46 [error] 8#8: *2 "/var/www/localhost/public/index.php" is not found (2: No such file or directory), client: 172.18.0.1, server: localhost, request: "GET / HTTP/1.1", host: "localhost"
-2020/12/23 09:26:46 [error] 8#8: *2 FastCGI sent in stderr: "Primary script unknown" while reading response header from upstream, client: 172.18.0.1, server: localhost, request: "GET / HTTP/1.1", upstream: "fastcgi://172.18.0.5:9000", host: "localhost"
-2020/12/23 09:26:47 [error] 8#8: *2 FastCGI sent in stderr: "Primary script unknown" while reading response header from upstream, client: 172.18.0.1, server: localhost, request: "GET /favicon.ico HTTP/1.1", upstream: "fastcgi://172.18.0.5:9000", host: "localhost", referrer: "http://localhost/"

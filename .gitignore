@@ -9,5 +9,6 @@ openresty/conf.d/*
 !openresty/conf.d/localhost.conf
 openresty/lua/*
 openresty/ssl/*
+openresty/logs/*
 
 mysql/docker-entrypoint-initdb.d/*
