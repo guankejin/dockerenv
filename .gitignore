@@ -1,0 +1,13 @@
+.idea
+.env
+
+data/mongo/*
+data/mysql/*
+data/redis/*
+
+openresty/conf.d/*
+!openresty/conf.d/localhost.conf
+openresty/lua/*
+openresty/ssl/*
+
+mysql/docker-entrypoint-initdb.d/*

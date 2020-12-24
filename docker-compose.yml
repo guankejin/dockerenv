@@ -1,0 +1,129 @@
+version: '3'
+
+# 网络
+networks: 
+  frontend:
+    driver: ${NETWORKS_DRIVER}
+  backend:
+    driver: ${NETWORKS_DRIVER}
+
+# 服务
+services:
+
+  # Redis
+  redis:
+    build:
+      context: ./redis
+      args:
+        - REDIS_IMAGE_REPO=${REDIS_IMAGE_REPO}
+        - REDIS_IMAGE_TAG=${REDIS_IMAGE_TAG}
+    container_name: ${REDIS_CONTAINER_NAME}
+    volumes:
+      - ${DATA_PATH}/redis:/data
+    ports:
+      - ${REDIS_PORT}:6379
+    networks:
+      - backend
+
+  # MySQL
+  mysql:
+    build:
+      context: ./mysql
+      args:
+        - MYSQL_IMAGE_REPO=${MYSQL_IMAGE_REPO}
+        - MYSQL_IMAGE_TAG=${MYSQL_IMAGE_TAG}
+    container_name: ${MYSQL_CONTAINER_NAME}
+    command: 
+      --innodb-use-native-aio=0
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - TIMEZONE=${MYSQL_TIMEZONE}
+    volumes:
+      - ${MYSQL_DATA_PATH}:/var/lib/mysql
+      - ./mysql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+    ports:
+      - ${MYSQL_PORT}:3306
+    networks:
+      - backend
+  
+  # Mongo
+  mongo:
+    build: 
+      context: ./mongo
+      args: 
+        - MONGO_IMAGE_REPO=${MONGO_IMAGE_REPO}
+        - MONGO_IMAGE_TAG=${MONGO_IMAGE_TAG}
+    container_name: ${MONGO_CONTAINER_NAME}
+    restart: always
+    environment:
+      - MONGO_DATA_DIR=/data/db
+      - MONGO_LOG_DIR=/data/logs
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+    volumes:
+      - ${MONGO_DATA_PATH}:/data/db
+      - ${MONGO_LOG_PATH}:/data/logs
+    ports:
+      - ${MONGO_PORT}:27017
+    networks:
+      - backend
+
+  # PHP
+  php:
+    build: 
+      context: ./php
+      args:
+        - PHP_IMAGE_REPO=${PHP_IMAGE_REPO}
+        - PHP_IMAGE_TAG=${PHP_IMAGE_TAG}
+        - USE_CHINESE_MIRRORS=${USE_CHINESE_MIRRORS}
+        - PHP_INSTALL_GD=${PHP_INSTALL_GD}
+        - PHP_INSTALL_GETTEXT=${PHP_INSTALL_GETTEXT}
+        - PHP_INSTALL_SOCKETS=${PHP_INSTALL_SOCKETS}
+        - PHP_INSTALL_BCMATH=${PHP_INSTALL_BCMATH}
+        - PHP_INSTALL_ZIP=${PHP_INSTALL_ZIP}
+        - PHP_INSTALL_SWOOLE=${PHP_INSTALL_SWOOLE}
+        - PHP_INSTSLL_PDO_MYSQL=${PHP_INSTSLL_PDO_MYSQL}
+        - PHP_INSTALL_MONGODB=${PHP_INSTALL_MONGODB}
+        - PHP_INSTALL_OPCACHE=${PHP_INSTALL_OPCACHE}
+        - PHP_INSTALL_MYSQLI=${PHP_INSTALL_MYSQLI}
+        - PHP_INSTALL_MYSQL_CLIENT=${PHP_INSTALL_MYSQL_CLIENT}
+        - PHP_INSTALL_REDIS=${PHP_INSTALL_REDIS}
+    container_name: ${PHP_CONTAINER_NAME}
+    restart: always
+    ports:
+        - ${PHP_PORT}:9000
+    volumes: 
+        - ./php/php-fpm.d/www.conf:/usr/local/etc/php-fpm.d/www.conf
+        - ${HOST_ROOT}:${CONTAINER_ROOT}
+    networks: 
+        - backend
+
+
+  # Openresty
+  openresty:
+    build:
+      context: ./openresty
+      args:
+        - OPENRESTY_IMAGE_REPO=${OPENRESTY_IMAGE_REPO}
+        - OPENRESTY_IMAGE_TAG=${OPENRESTY_IMAGE_TAG}
+    container_name: ${OPENRESTY_CONTAINER_NAME}
+    restart: always
+    working_dir: ${CONTAINER_ROOT}
+    ports:
+      - 80:80
+      - 443:443
+    volumes: 
+      - ./openresty/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf
+      - ./openresty/conf.d:/etc/nginx/conf.d
+      - ./openresty/logs:/var/log/nginx
+      - ${HOST_ROOT}:${CONTAINER_ROOT}
+      - ./openresty/lua:/usr/local/openresty/nginx/conf/lua
+      - ./openresty/ssl:/etc/letsencrypt
+    depends_on: 
+      - php
+    links: 
+      - php
+    networks: 
+      - frontend
+      - backend
+    
