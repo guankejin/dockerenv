@@ -109,9 +109,9 @@ sudo docker-compose build
 
 > 修改`Dockerfile`或`.env`文件后需要重新编译
 
-启动
+启动(后台运行)
 ```
-sudo docker-compose start
+sudo docker-compose up -d
 ```
 
 
