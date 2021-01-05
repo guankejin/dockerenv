@@ -114,7 +114,13 @@ sudo docker-compose build
 sudo docker-compose up -d
 ```
 
+## PHP配置
 
+在`php/ini`目录下选择需要的开发或生产环境`php.ini`配置，拷贝并重命名为`php.ini`，以生产为例：
+
+```
+cp php/ini/php.ini-production php/ini/php.ini
+```
 
 ## MySQL配置
 

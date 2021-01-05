@@ -1,5 +1,6 @@
 .idea
 .env
+php/ini/php.ini
 
 data/mongo/*
 data/mysql/*

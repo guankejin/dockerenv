@@ -21,7 +21,10 @@ RUN set -xe; \
     apt-get update -yqq && \
     pecl channel-update pecl.php.net && \
     apt-get install -yqq \
-    apt-utils
+    apt-utils \
+    htop
+
+COPY ./ini/php.ini /usr/local/etc/php/php.ini
 
 # gd
 ARG PHP_INSTALL_GD=false
@@ -87,13 +90,14 @@ ARG PHP_INSTALL_OPCACHE=false
 RUN if [ ${PHP_INSTALL_OPCACHE} = true ]; then \
     docker-php-ext-install opcache \
 ;fi
-COPY ./opcache.ini /usr/local/etc/php/conf.d/opcache.ini
+COPY ./ini/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 
 # mysqli
 ARG PHP_INSTALL_MYSQLI=false
 RUN if [ ${PHP_INSTALL_MYSQLI} = true ]; then \
     docker-php-ext-install mysqli \
 ;fi
+COPY ./ini/mysql.ini /usr/local/etc/php/conf.d/mysql.ini
 
 # mysql-client
 USER root

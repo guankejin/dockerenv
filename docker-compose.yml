@@ -94,6 +94,7 @@ services:
         - ${PHP_PORT}:9000
     volumes: 
         - ./php/php-fpm.d/www.conf:/usr/local/etc/php-fpm.d/www.conf
+        - ./php/ini/php.ini:/usr/local/etc/php/php.ini
         - ${HOST_ROOT}:${CONTAINER_ROOT}
     networks: 
         - backend
